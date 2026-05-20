@@ -1,0 +1,31 @@
+∆Py fuel gallons: = VAR Curr = [total fuel gallons]
+VAR CurrentYear = MAX('Calendar'[Year])
+VAR MinYear = MIN('Calendar'[Year])
+VAR MultiYear = CurrentYear <> MinYear
+VAR PrevYear = CurrentYear - 1
+VAR Prev = 
+    CALCULATE(
+        [total fuel gallons],
+        ALL('Calendar'),
+        'Calendar'[Year] = PrevYear
+    )
+VAR ChangePct = DIVIDE(Curr - Prev, Prev)
+
+RETURN
+IF(
+    MultiYear,
+    "Select Year",
+    IF(
+        ISBLANK(Prev) || Prev = 0,
+        "No Prior Year",
+        IF(
+            ChangePct > 0,
+            "vs " & PrevYear & " ▲ " & FORMAT(ChangePct, "0.00%"),
+            IF(
+                ChangePct < 0,
+                "vs " & PrevYear & " ▼ " & FORMAT(ABS(ChangePct), "0.00%"),
+                "vs " & PrevYear & " ▶ 0%"
+            )
+        )
+    )
+)

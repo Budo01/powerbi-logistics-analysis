@@ -1,0 +1,31 @@
+Rev MoM Color = 
+
+VAR _IsFiltered =
+    ISCROSSFILTERED('Calendar'[Date])
+
+VAR _CM =
+    [Total Load Revenue]
+
+VAR _PM =
+    CALCULATE(
+        [Total Load Revenue],
+        DATEADD('Calendar'[Date], -1, MONTH)
+    )
+
+VAR _perc =
+    DIVIDE(_CM - _PM, _PM)
+
+RETURN
+SWITCH(
+    TRUE(),
+
+    NOT _IsFiltered, "Grey",
+
+    ISBLANK(_perc), "Grey",
+
+    _perc > 0, "Green",
+
+    _perc < 0, "Red",
+
+    "Grey"
+)

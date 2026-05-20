@@ -1,0 +1,32 @@
+Rev MoM = 
+
+VAR _IsFiltered =
+    ISCROSSFILTERED('Calendar'[Date])
+
+VAR _CM =
+    [Total Load Revenue]
+
+VAR _PM =
+    CALCULATE(
+        [Total Load Revenue],
+        DATEADD('Calendar'[Date], -1, MONTH)
+    )
+
+VAR _perc =
+    DIVIDE(_CM - _PM, _PM)
+
+VAR _format =
+    SWITCH(
+        TRUE(),
+        ISBLANK(_perc), "▶ 0.0%",
+        _perc > 0, "▲ " & FORMAT(_perc, "0.00%"),
+        _perc < 0, "▼ " & FORMAT(ABS(_perc), "0.00%"),
+        "▶ 0.0%"
+    )
+
+RETURN
+IF(
+    NOT _IsFiltered,
+    "▶ 0.0%",
+    _format
+)
